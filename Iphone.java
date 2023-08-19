@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Iphone extends Aplicativo implements Contatos, Navegador, ReprodutorMusical  {
 
     private boolean reprodutorAberto;
@@ -16,6 +19,39 @@ public class Iphone extends Aplicativo implements Contatos, Navegador, Reproduto
 
     private static final String CONTATOS_FECHADO = "O App Contatos está fechado!";
 
+    private List<String> apps = new ArrayList<>(List.of("Contatos", "Navegador", "Reprodutor Musical"));
+
+    private List<String> appsAbertos = new ArrayList<>();
+
+
+    private boolean verificarApp(String app) {
+        if(appsAbertos.contains(app)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    void abrirApp(String app) {
+        if(!appsAbertos.contains(app) && apps.contains(app)) {
+            appsAbertos.add(app);
+            System.out.println("Abrindo o aplicativo " + app);
+        } else if (appsAbertos.contains(app)) {
+            System.out.println("O aplicativo " + app + " já está aberto!");
+        } else {
+            System.out.println("Seu aparelho não contém o aplicativo informado!");
+        }
+    }
+
+    @Override
+    void fecharApp(String app) {
+        if(appsAbertos.contains(app)) {
+            appsAbertos.remove(app);
+        } else {
+            System.out.println("O aplicativo " + app + " já está fechado!");
+        }
+    }
 
     public void ligarIphone() {
         if(!iPhoneLigado) {
@@ -35,38 +71,15 @@ public class Iphone extends Aplicativo implements Contatos, Navegador, Reproduto
         }
     }
 
-    @Override
-    public void abrirReprodutor() {
-        if(iPhoneLigado && !reprodutorAberto) {
-            reprodutorAberto = true;
-            System.out.println("Reprodutor aberto!");
-        } else if(!iPhoneLigado) {
-            System.out.println(IPHONE_DESLIGADO);
-        } else {
-            System.out.println("O reprodutor já está aberto!");
-        }
-    }
-
-    @Override
-    public void fecharReprodutor() {
-        if (iPhoneLigado && reprodutorAberto) {
-            reprodutorAberto = false;
-            System.out.println(REPRODUTOR_FECHADO);
-        } else if (!iPhoneLigado) {
-            System.out.println(IPHONE_DESLIGADO);
-        } else {
-            System.out.println("O reprodutor já está fechado!");
-        }
-    }
 
     @Override
     public void tocar() {
-        if (musicaSelecionada!=null && iPhoneLigado && reprodutorAberto && !tocando) {
+        if (musicaSelecionada!=null && iPhoneLigado && verificarApp("Reprodutor Musical") && !tocando) {
             tocando = true;
             System.out.println("Tocando " + getMusicaSelecionada() + "!");
         } else if (!iPhoneLigado){
             System.out.println(IPHONE_DESLIGADO);
-        }else if(!reprodutorAberto){
+        }else if(!appsAbertos.contains("Reprodutor Musical")){
             System.out.println(REPRODUTOR_FECHADO);
         } else if (musicaSelecionada == null){
             System.out.println("Nenhuma música selecionada para tocar!");
@@ -77,12 +90,12 @@ public class Iphone extends Aplicativo implements Contatos, Navegador, Reproduto
 
     @Override
     public void pausar() {
-        if (iPhoneLigado && reprodutorAberto && tocando) {
+        if (iPhoneLigado && verificarApp("Reprodutor Musical") && tocando) {
             tocando = false;
             System.out.println("Reprodutor pausado!");
         } else if(!iPhoneLigado) {
             System.out.println(IPHONE_DESLIGADO);
-        } else if(!reprodutorAberto){
+        } else if(!appsAbertos.contains("Reprodutor Musical")){
             System.out.println(REPRODUTOR_FECHADO);
         } else {
             System.out.println("O reprodutor não está tocando!");
@@ -91,7 +104,7 @@ public class Iphone extends Aplicativo implements Contatos, Navegador, Reproduto
 
     @Override
     public void selecionarMusica(String musica) {
-        if (iPhoneLigado && reprodutorAberto) {
+        if (iPhoneLigado && verificarApp("Reprodutor Musical")) {
             System.out.println("Música selecionada: " + musica);
             musicaSelecionada = musica;
         } else if (!iPhoneLigado){
@@ -102,36 +115,12 @@ public class Iphone extends Aplicativo implements Contatos, Navegador, Reproduto
     }
 
     @Override
-    public void abrirNavegador() {
-        if (iPhoneLigado && !navegadorAberto) {
-            navegadorAberto = true;
-            System.out.println("Navegador aberto!");
-        } else if (!iPhoneLigado) {
-            System.out.println(IPHONE_DESLIGADO);
-        } else {
-            System.out.println("O navegador já está aberto!");
-        }
-    }
-
-    @Override
-    public void fecharNavegador() {
-        if(iPhoneLigado && navegadorAberto) {
-            navegadorAberto = false;
-            System.out.println(NAVEGADOR_FECHADO);
-        } else if (!iPhoneLigado) {
-            System.out.println(IPHONE_DESLIGADO);
-        } else {
-            System.out.println("O navegador já está fechado!");
-        }
-    }
-
-    @Override
     public void exibirPagina(int pag) {
-        if(iPhoneLigado && navegadorAberto && pag > 0 && pag <= abasAbertas) {
+        if(iPhoneLigado && verificarApp("Navegador") && pag > 0 && pag <= abasAbertas) {
             System.out.println("Exibindo a página " + pag);
         } else if (!iPhoneLigado) {
             System.out.println(IPHONE_DESLIGADO);
-        } else if (!navegadorAberto) {
+        } else if (appsAbertos.contains("Navegador")) {
             System.out.println(NAVEGADOR_FECHADO);
         } else {
             System.out.println("A página mencionada não existe!");
@@ -140,7 +129,7 @@ public class Iphone extends Aplicativo implements Contatos, Navegador, Reproduto
 
     @Override
     public void adicionarNovaAba() {
-        if(iPhoneLigado && navegadorAberto) {
+        if(iPhoneLigado && verificarApp("Navegador")) {
             System.out.println("Nova aba adicionada!");
             abasAbertas++;
         } else if(!iPhoneLigado) {
@@ -152,7 +141,7 @@ public class Iphone extends Aplicativo implements Contatos, Navegador, Reproduto
 
     @Override
     public void atualizarPagina() {
-        if(iPhoneLigado && navegadorAberto) {
+        if(iPhoneLigado && verificarApp("Navegador")) {
             System.out.println("Atualizando página!");
         } else if (!iPhoneLigado) {
             System.out.println(IPHONE_DESLIGADO);
@@ -161,30 +150,10 @@ public class Iphone extends Aplicativo implements Contatos, Navegador, Reproduto
         }
     }
 
-    @Override
-    public void abrirContatos() {
-        if(iPhoneLigado) {
-            contatosAberto = true;
-        } else {
-            System.out.println(IPHONE_DESLIGADO);
-        }
-    }
-
-    @Override
-    public void fecharContatos() {
-        if(iPhoneLigado && contatosAberto) {
-            contatosAberto = false;
-            System.out.println("Fechando Contatos!");
-        } else if (!iPhoneLigado) {
-            System.out.println(IPHONE_DESLIGADO);
-        } else {
-            System.out.println("O App Contatos já está fechado!");
-        }
-    }
 
     @Override
     public void ligar() {
-        if(iPhoneLigado && contatosAberto) {
+        if(iPhoneLigado && verificarApp("Contatos")) {
             System.out.println("Realizando ligação!");
         } else if (!iPhoneLigado) {
             System.out.println(IPHONE_DESLIGADO);
@@ -204,7 +173,7 @@ public class Iphone extends Aplicativo implements Contatos, Navegador, Reproduto
 
     @Override
     public void iniciarCorreioDeVoz() {
-        if (iPhoneLigado && contatosAberto) {
+        if (iPhoneLigado && verificarApp("Contatos")) {
             System.out.println("Iniciando Correio de Voz!");
         } else if (!iPhoneLigado) {
             System.out.println(IPHONE_DESLIGADO);
@@ -216,5 +185,5 @@ public class Iphone extends Aplicativo implements Contatos, Navegador, Reproduto
     public String getMusicaSelecionada() {
         return musicaSelecionada;
     }
-    
+
 }
