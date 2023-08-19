@@ -1,4 +1,4 @@
-public class Iphone implements Contatos, Navegador, ReprodutorMusical {
+public class Iphone extends Aplicativo implements Contatos, Navegador, ReprodutorMusical  {
 
     private boolean reprodutorAberto;
     private boolean tocando;
