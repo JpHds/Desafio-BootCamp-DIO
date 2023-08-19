@@ -3,13 +3,10 @@ import java.util.List;
 
 public class Iphone extends Aplicativo implements Contatos, Navegador, ReprodutorMusical  {
 
-    private boolean reprodutorAberto;
     private boolean tocando;
     private String musicaSelecionada;
-    private boolean navegadorAberto;
     private boolean iPhoneLigado;
     private int abasAbertas = 0;
-    private boolean contatosAberto;
 
     private static final String IPHONE_DESLIGADO = "O iPhone está desligado!";
 
